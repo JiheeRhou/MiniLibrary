@@ -1,17 +1,16 @@
 ﻿@model MiniLibrary.Models.Book
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Book";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Edit</h1>
+<h1>@ViewData["Title"]</h1>
 
-<h4>Book</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
@@ -20,8 +19,13 @@
                 <span asp-validation-for="Title" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="BookAuthors" class="control-label"></label>
+                <select asp-for="BookAuthors" class="form-control" asp-items="ViewBag.Authors" multiple></select>
+                <span asp-validation-for="BookAuthors" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Genre" class="control-label"></label>
-                <select asp-for="Genre" class="form-control"></select>
+                <select asp-for="Genre" class="form-control" asp-items="ViewBag.Genre"></select>
                 <span asp-validation-for="Genre" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -60,9 +64,17 @@
                 <span asp-validation-for="ReserveUserId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Photo" class="control-label"></label>
-                <input asp-for="Photo" class="form-control" />
-                <span asp-validation-for="Photo" class="text-danger"></span>
+                <div class="row">
+                    <div class="col-sm-8">
+                        <label asp-for="Photo" class="control-label"></label>
+                        <input type="file" asp-for="Photo" class="form-control" onchange="previewImage(event)" />
+                        <span asp-validation-for="Photo" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <partial name="_BookImage" model="Model" />
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MiniLibrary.Data;
 using MiniLibrary.Models;
+using static MiniLibrary.Models.Book;
 
 namespace MiniLibrary.Controllers
 {
@@ -22,7 +23,10 @@ namespace MiniLibrary.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Books.Include(b => b.Publisher);
+            var applicationDbContext = _context.Books
+                .Include(b => b.Publisher)
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -36,6 +40,8 @@ namespace MiniLibrary.Controllers
 
             var book = await _context.Books
                 .Include(b => b.Publisher)
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
@@ -49,6 +55,8 @@ namespace MiniLibrary.Controllers
         public IActionResult Create()
         {
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name");
+            ViewData["Genre"] = new SelectList(Enum.GetValues(typeof(BookGenre)));
+            ViewData["Authors"] = new SelectList(_context.Authors, "Id", "Name");
             return View();
         }
 
@@ -57,15 +65,35 @@ namespace MiniLibrary.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Genre,Description,PublisherId,PublishedDate,ISBN,Pages,IsAvailable,ReserveUserId,Photo")] Book book)
+        public async Task<IActionResult> Create([Bind("Id,Title,Genre,Description,PublisherId,PublishedDate,ISBN,Pages,IsAvailable,Photo")] Book book, List<int> BookAuthors, IFormFile? Photo)
         {
             if (ModelState.IsValid)
             {
+                book.Photo = await UploadPhoto(Photo);
+
                 _context.Add(book);
                 await _context.SaveChangesAsync();
+
+                if (BookAuthors != null && BookAuthors.Count > 0)
+                {
+                    foreach (int author in BookAuthors)
+                    {
+                        var bookAuthor = new BookAuthor
+                        {
+                            BookId = book.Id,
+                            AuthorId = author
+                        };
+                        _context.Add(bookAuthor);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
+            ViewData["Genre"] = new SelectList(Enum.GetValues(typeof(BookGenre)));
+            ViewData["Authors"] = new SelectList(_context.Authors, "Id", "Name");
             return View(book);
         }
 
@@ -83,6 +111,8 @@ namespace MiniLibrary.Controllers
                 return NotFound();
             }
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
+            ViewData["Genre"] = new SelectList(Enum.GetValues(typeof(BookGenre)));
+            ViewData["Authors"] = new SelectList(_context.Authors, "Id", "Name");
             return View(book);
         }
 
@@ -91,7 +121,7 @@ namespace MiniLibrary.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Genre,Description,PublisherId,PublishedDate,ISBN,Pages,IsAvailable,ReserveUserId,Photo")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Genre,Description,PublisherId,PublishedDate,ISBN,Pages,IsAvailable,ReserveUserId,Photo")] Book book, List<int> BookAuthors, IFormFile? Photo)
         {
             if (id != book.Id)
             {
@@ -102,8 +132,27 @@ namespace MiniLibrary.Controllers
             {
                 try
                 {
+                    book.Photo = await UploadPhoto(Photo);
+
                     _context.Update(book);
                     await _context.SaveChangesAsync();
+
+                    var existingBookAuthors = _context.BookAuthors.Where(ba => ba.BookId == book.Id);
+                    _context.BookAuthors.RemoveRange(existingBookAuthors);
+
+                    if (BookAuthors != null && BookAuthors.Count > 0)
+                    {
+                        foreach (int authorId in BookAuthors)
+                        {
+                            var bookAuthor = new BookAuthor
+                            {
+                                BookId = book.Id,
+                                AuthorId = authorId
+                            };
+                            _context.Add(bookAuthor);
+                        }
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -119,6 +168,8 @@ namespace MiniLibrary.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
+            ViewData["Genre"] = new SelectList(Enum.GetValues(typeof(BookGenre)));
+            ViewData["Authors"] = new SelectList(_context.Authors.ToList(), "Id", "Name");
             return View(book);
         }
 
@@ -132,6 +183,8 @@ namespace MiniLibrary.Controllers
 
             var book = await _context.Books
                 .Include(b => b.Publisher)
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
@@ -163,6 +216,31 @@ namespace MiniLibrary.Controllers
         private bool BookExists(int id)
         {
           return (_context.Books?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private async Task<string> UploadPhoto(IFormFile Photo)
+        {
+            if (Photo != null)
+            {
+                // Get temp location
+                var filePath = Path.GetTempFileName();
+
+                // Create a unique name so we don't overwrite any existing photos
+                // eg: photo.jpg => abcdefg123456890-photo.jpg (Using the Globally Unique Identifier (GUID))
+                var fileName = Guid.NewGuid() + "-" + Photo.FileName;
+
+                // Set destination path dynamically so it works on any system (double slashes escape the characters)
+                var uploadPath = Directory.GetCurrentDirectory() + "\\wwwroot\\img\\books\\" + fileName;
+
+                // Execute the file copy
+                using var stream = new FileStream(uploadPath, FileMode.Create);
+                await Photo.CopyToAsync(stream);
+
+                // Set the Photo property name of the new Product object
+                return fileName;
+            }
+
+            return null;
         }
     }
 }
