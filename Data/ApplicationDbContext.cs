@@ -16,6 +16,8 @@ namespace MiniLibrary.Data
 
         public DbSet<Checkout> Checkouts { get; set; }
 
+        public DbSet<Member> Members { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
