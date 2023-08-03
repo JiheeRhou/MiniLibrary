@@ -7,5 +7,7 @@ namespace MiniLibrary.Models
         public List<Book>? Books { get; set; }
 
         public List<Checkout>? Checkouts { get; set; }
+
+        public Member? Member { get; set; }
     }
 }
