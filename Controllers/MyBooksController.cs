@@ -19,8 +19,7 @@ namespace MiniLibrary.Controllers
             _context = context;
         }
 
-        // GET: Checkouts
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> checkout()
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -30,6 +29,7 @@ namespace MiniLibrary.Controllers
                 .ToListAsync();
 
             var myBooks = await _context.Books
+                .Include(b => b.Checkouts)
                 .Include(b => b.Publisher)
                 .Include(b => b.BookAuthors)
                 .ThenInclude(ba => ba.Author)
@@ -39,7 +39,20 @@ namespace MiniLibrary.Controllers
             return View(myBooks);
         }
 
-        // GET: Checkouts/Details/5
+        public async Task<IActionResult> reserved()
+        {
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var myBooks = await _context.Books
+                .Include(b => b.Publisher)
+                .Include(b => b.BookAuthors)
+                .ThenInclude(ba => ba.Author)
+                .Where(book => book.ReserveUserId == userId)
+                .ToListAsync();
+
+            return View(myBooks);
+        }
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Books == null)
@@ -61,51 +74,5 @@ namespace MiniLibrary.Controllers
             return View(book);
         }
 
-        public async Task<IActionResult> Checkout(int? id)
-        {
-            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            var book = await _context.Books.FirstOrDefaultAsync(book => book.Id == id);
-
-            if (book == null)
-            {
-                return NotFound();
-            }
-
-            var checkout = new Checkout
-            {
-                UserId = userId,
-                BookId = book.Id,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(14)
-            };
-
-            if (ModelState.IsValid)
-            {
-                _context.Add(checkout);
-                await _context.SaveChangesAsync();
-
-                book.IsAvailable = false;
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("MyBooks", "Checkouts");
-            }
-
-            return View(book);
-        }
-
-        public async Task<IActionResult> MyBooks()
-        {
-            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            var checkout = _context.Checkouts
-                .Include(checkout => checkout.User)
-                .Include(checkout => checkout.Book)
-                .ThenInclude(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
-                .FirstOrDefaultAsync(checkout => checkout.IsReturn == false && checkout.UserId == userId);
-
-            return View(MyBooks);
-        }
     }
 }

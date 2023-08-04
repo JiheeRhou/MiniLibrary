@@ -18,10 +18,12 @@ namespace MiniLibrary.Models
 
         [Required()]
         [Display(Name = "Checkout Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime StartDate { get; set; }
 
         [Required()]
         [Display(Name = "Duedate")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime EndDate { get; set; }
 
         [Required(), DefaultValue(false)]

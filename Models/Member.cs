@@ -12,9 +12,11 @@ namespace MiniLibrary.Models
         public string UserId { get; set; }
 
         [Required()]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime RegisterDate { get; set; }
 
         [Required()]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ExpiredDate { get; set; }
     }
 }

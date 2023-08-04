@@ -33,6 +33,7 @@ namespace MiniLibrary.Models
 
         [Required()]
         [Display(Name = "Published")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime PublishedDate { get; set; }
 
         [Required(), MaxLength(13)]

@@ -67,8 +67,8 @@ namespace MiniLibrary.Controllers
             {
                 UserId = userId,
                 BookId = book.Id,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now.AddDays(14)
+                StartDate = DateTime.Today.Date,
+                EndDate = DateTime.Today.Date.AddDays(14)
             };
 
             if (ModelState.IsValid)
@@ -79,7 +79,7 @@ namespace MiniLibrary.Controllers
                 book.IsAvailable = false;
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Index", "MyBooks");
+                return RedirectToAction("checkout", "MyBooks");
             }
 
             return View(book);
@@ -101,7 +101,7 @@ namespace MiniLibrary.Controllers
                 book.ReserveUserId = userId;
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Index", "MyBooks");
+                return RedirectToAction("reserved", "MyBooks");
             }
 
             return View(book);

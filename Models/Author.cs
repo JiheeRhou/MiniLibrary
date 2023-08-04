@@ -11,6 +11,7 @@ namespace MiniLibrary.Models
         [Display(Name = "Author")]
         public string Name { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? BOD { get; set; }
 
         public List<BookAuthor>? BookAuthors { get; set; }
