@@ -35,9 +35,6 @@
                 @Html.DisplayNameFor(model => model.IsAvailable)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReserveUserId)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Photo)
             </th>
             <th></th>
@@ -73,11 +70,20 @@
             <td>
                 @if (item.IsAvailable == true)
                 {
-                    @Html.Display("Available")
+                    <text>Available</text>
                 }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReserveUserId)
+                else
+                {
+                    @if (item.ReserveUserId != null)
+                    {
+                        <text>Reserved</text>
+                            @Html.DisplayFor(modelItem => item.ReserveUserId)
+                    }
+                    else
+                    {
+                        <text>on Loan</text>
+                    }
+                }
             </td>
             <td>
                 <partial name="_BookImage" model="item" />

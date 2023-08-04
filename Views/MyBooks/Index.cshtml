@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<MiniLibrary.Models.Book>
 
 @{
-    ViewData["Title"] = "Book List";
+    ViewData["Title"] = "My Book List";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -21,7 +21,7 @@
                 @Html.DisplayNameFor(model => model.Genre)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsAvailable)
+                @Html.DisplayNameFor(model => model.Checkouts)
             </th>
             <th></th>
         </tr>
@@ -51,35 +51,11 @@
                     @Html.DisplayFor(modelItem => item.Genre)
                 </td>
                 <td>
-                    @if (item.IsAvailable == true)
-                    {
-                        <text>Available</text>
-                    }
-                    else
-                    {
-                        @if (item.ReserveUserId != null)
-                        {
-                            <text>Reserved</text>
-                        }
-                        else
-                        {
-                            <text>on Loan</text>
-                        }
-                    }
+                </td>
+                <td>
                 </td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                    @if (item.IsAvailable == true )
-                    {
-                        <a asp-action="Checkout" asp-route-id="@item.Id">Checkout</a>
-                    }
-                    else
-                    {
-                        @if (item.ReserveUserId == null)
-                        {
-                            <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a>
-                        }
-                    }
                 </td>
             </tr>
         }

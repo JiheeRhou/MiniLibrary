@@ -21,7 +21,7 @@ namespace MiniLibrary.Models
         public DateTime StartDate { get; set; }
 
         [Required()]
-        [Display(Name = "Dudate")]
+        [Display(Name = "Duedate")]
         public DateTime EndDate { get; set; }
 
         [Required(), DefaultValue(false)]

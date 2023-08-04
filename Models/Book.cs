@@ -42,11 +42,11 @@ namespace MiniLibrary.Models
         public int Pages { get; set; }
 
         [Required()]
-        [Display(Name = "Availability")]
+        [Display(Name = "Status")]
         public bool IsAvailable { get; set; }
 
         [Display(Name = "Reserved")]
-        public int? ReserveUserId { get; set; }
+        public string? ReserveUserId { get; set; }
 
         public string? Photo { get; set; }
 
