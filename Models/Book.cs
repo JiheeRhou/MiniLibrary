@@ -18,7 +18,6 @@ namespace MiniLibrary.Models
         public int Id { get; set; }
 
         [Required(), MaxLength(500)]
-        [Display(Name = "Book Title")]
         public string Title { get; set; }
 
         [Required()]
@@ -43,6 +42,7 @@ namespace MiniLibrary.Models
         public int Pages { get; set; }
 
         [Required()]
+        [Display(Name = "Availability")]
         public bool IsAvailable { get; set; }
 
         [Display(Name = "Reserved")]

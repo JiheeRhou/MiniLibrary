@@ -1,49 +1,90 @@
-﻿@model MiniLibrary.Models.Checkout
+﻿@model MiniLibrary.Models.Book
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Book Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<h1>@ViewData["Title"]</h1>
 
 <div>
-    <h4>Checkout</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Title)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Title)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndDate)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.BookAuthors)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndDate)
+        <dd class="col-sm-10">
+            @if (Model.BookAuthors != null)
+            {
+                @foreach (var bookAuthor in Model.BookAuthors)
+                {
+                    @Html.DisplayFor(modelItem => bookAuthor.Author.Name)
+
+                    <br />
+                }
+            }
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsReturn)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Genre)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsReturn)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Genre)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Book)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Publisher)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Book.ISBN)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Publisher.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PublishedDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PublishedDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ISBN)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ISBN)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Pages)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Pages)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.IsAvailable)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.IsAvailable)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ReserveUserId)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ReserveUserId)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Photo)
+        </dt>
+        <dd class="col-sm-10">
+            <partial name="_BookImage" model="Model" />
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

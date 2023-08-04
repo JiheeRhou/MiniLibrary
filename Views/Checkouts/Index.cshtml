@@ -1,60 +1,85 @@
-﻿@model IEnumerable<MiniLibrary.Models.Checkout>
+﻿@model IEnumerable<MiniLibrary.Models.Book>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Book List";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>@ViewData["Title"]</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
+            <th></th>
             <th>
-                @Html.DisplayNameFor(model => model.StartDate)
+                @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EndDate)
+                @Html.DisplayNameFor(model => model.BookAuthors)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsReturn)
+                @Html.DisplayNameFor(model => model.Genre)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User)
+                @Html.DisplayNameFor(model => model.IsAvailable)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Book)
+                @Html.DisplayNameFor(model => model.ReserveUserId)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsReturn)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Book.ISBN)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <partial name="_BookImage" model="item" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @if (item.BookAuthors != null)
+                    {
+                        @foreach (var bookAuthor in item.BookAuthors)
+                        {
+                            @Html.DisplayFor(modelItem => bookAuthor.Author.Name)
+
+                            <br />
+                        }
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Genre)
+                </td>
+                <td>
+                    @if (item.IsAvailable == true)
+                    {
+                        <text>Available</text>
+                    }
+                </td>
+                <td>
+                    @if (item.ReserveUserId != null)
+                    {
+                        <text>Reserved</text>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    @if (item.IsAvailable == true )
+                    {
+                        <a asp-action="Checkout" asp-route-id="@item.Id">Checkout</a>
+                    }
+                    else
+                    {
+                        @if (item.ReserveUserId == null)
+                        {
+                            <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a>
+                        }
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

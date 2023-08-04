@@ -71,7 +71,10 @@
                 @Html.DisplayFor(modelItem => item.ISBN)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IsAvailable)
+                @if (item.IsAvailable == true)
+                {
+                    @Html.Display("Available")
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ReserveUserId)
