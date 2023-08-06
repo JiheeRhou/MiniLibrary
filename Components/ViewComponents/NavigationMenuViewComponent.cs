@@ -15,7 +15,12 @@ namespace MiniLibrary.Components.ViewComponents
                 new MenuItem { Controller = "Books", Action = "Index", Label = "List" },
                 new MenuItem { Controller = "Books", Action = "Create", Label = "Create" },
             }, Authorized = true, AllowedRoles = new List<string> { "Administrator" } },
-            new MenuItem { Controller = "Checkouts", Action = "Index", Label = "Books" , Authorized = true, AllowedRoles = new List<string> { "Member", "User" } },
+            new MenuItem { Controller = "Checkouts", Action = "Index", Label = "Books", DropdownItems = new List<MenuItem> {
+                new MenuItem { Controller = "Checkouts", Action = "Index", Label = "List" },
+                new MenuItem { Controller = "MyBooks", Action = "Checkout", Label = "My Checkout Books" },
+                new MenuItem { Controller = "MyBooks", Action = "Reserved", Label = "My Reserved Books" },
+            }, Authorized = true, AllowedRoles = new List<string> { "Member" } },
+            new MenuItem { Controller = "Checkouts", Action = "Index", Label = "Books" , Authorized = true, AllowedRoles = new List<string> { "User" } },
             new MenuItem { Controller = "Authors", Action = "Index", Label = "Authors", DropdownItems = new List<MenuItem> {
                 new MenuItem { Controller = "Authors", Action = "Index", Label = "List" },
                 new MenuItem { Controller = "Authors", Action = "Create", Label = "Create" },

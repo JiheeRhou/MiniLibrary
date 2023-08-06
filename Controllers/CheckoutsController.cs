@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MiniLibrary.Data;
 using MiniLibrary.Models;
+using System.Linq;
 using System.Security.Claims;
 using static MiniLibrary.Models.Book;
 
@@ -22,12 +23,35 @@ namespace MiniLibrary.Controllers
         // GET: Checkouts
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Books
-                .Include(b => b.Publisher)
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var books = await _context.Books
                 .Include(b => b.Checkouts)
+                .Include(b => b.Publisher)
                 .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author);
-            return View(await applicationDbContext.ToListAsync());
+                .ThenInclude(ba => ba.Author)
+                .ToListAsync();
+
+            foreach (var book in books)
+            {
+                var checkout = await _context.Checkouts.Where(c => c.BookId == book.Id && c.IsReturn == false).OrderByDescending(c => c.StartDate).FirstOrDefaultAsync();
+
+                if (checkout != null)
+                {
+                    var checkoutUserId = checkout.UserId;
+                    if (userId == checkoutUserId)
+                    {
+                        book.User = new User();
+                        book.User.Id = checkoutUserId;
+                    }
+                } else if (userId == book.ReserveUserId)
+                {
+                    book.User = new User();
+                    book.User.Id = book.ReserveUserId;
+                }
+            }
+
+            return View(books);
         }
 
         // GET: Checkouts/Details/5
@@ -79,10 +103,41 @@ namespace MiniLibrary.Controllers
                 book.IsAvailable = false;
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("checkout", "MyBooks");
+                return RedirectToAction("Checkout", "MyBooks");
             }
 
             return View(book);
+        }
+
+        public async Task<IActionResult> Return(int? id)
+        {
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var checkout = await _context.Checkouts.FirstOrDefaultAsync(checkout => checkout.Id == id);
+
+            if (checkout == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                checkout.IsReturn = true;
+                _context.Add(checkout);
+                await _context.SaveChangesAsync();
+
+                var book = await _context.Books.FirstOrDefaultAsync(book => book.Id == checkout.BookId);
+
+                if (book != null && book.ReserveUserId == null)
+                {
+                    book.IsAvailable = false;
+                    await _context.SaveChangesAsync();
+                }
+
+                return RedirectToAction("Checkout", "MyBooks");
+            }
+
+            return View(checkout);
         }
 
         public async Task<IActionResult> Reserve(int? id)
@@ -101,7 +156,7 @@ namespace MiniLibrary.Controllers
                 book.ReserveUserId = userId;
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("reserved", "MyBooks");
+                return RedirectToAction("Reserved", "MyBooks");
             }
 
             return View(book);

@@ -57,27 +57,42 @@
                     }
                     else
                     {
-                        @if (item.ReserveUserId != null)
-                        {
-                            <text>Reserved</text>
-                        }
-                        else
+                        @if (item.Checkouts[0].IsReturn == false)
                         {
                             <text>on Loan</text>
+                        }
+                        @if (item.Checkouts[0].IsReturn == false && item.ReserveUserId != null)
+                        {
+                            <br/>
+                        }
+                        @if (item.ReserveUserId != null)
+                        {
+                            @if (item.Checkouts[0].IsReturn == true && item.User != null)
+                            {
+                                <text>Available</text>
+                            }
+                            else
+                            {
+                                <text>Reserved</text>
+                            }
                         }
                     }
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-previous="Index">Details</a>
                     @if (item.IsAvailable == true )
                     {
                         <a asp-action="Checkout" asp-route-id="@item.Id">Checkout</a>
                     }
                     else
                     {
-                        @if (item.ReserveUserId == null)
+                        @if (item.ReserveUserId == null && item.User == null)
                         {
                             <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a>
+                        }
+                        else if (item.ReserveUserId != null && item.User != null)
+                        {
+                            <a asp-action="Checkout" asp-route-id="@item.Id">Checkout</a>
                         }
                     }
                 </td>

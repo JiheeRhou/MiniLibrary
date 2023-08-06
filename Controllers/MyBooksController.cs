@@ -19,7 +19,7 @@ namespace MiniLibrary.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> checkout()
+        public async Task<IActionResult> Checkout()
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -39,11 +39,45 @@ namespace MiniLibrary.Controllers
             return View(myBooks);
         }
 
-        public async Task<IActionResult> reserved()
+        public async Task<IActionResult> Return(int? id)
+        {
+            var checkout = await _context.Checkouts.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (checkout == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                checkout.IsReturn = true;
+                await _context.SaveChangesAsync();
+
+                var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == checkout.BookId);
+
+                if (book == null)
+                {
+                    return NotFound();
+                }
+
+                if (book.ReserveUserId == null)
+                {
+                    book.IsAvailable = true;
+                    await _context.SaveChangesAsync();
+                }
+
+                return RedirectToAction("Checkout", "MyBooks");
+            }
+
+            return View(Checkout);
+        }
+
+        public async Task<IActionResult> Reserved()
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var myBooks = await _context.Books
+                .Include(b => b.Checkouts)
                 .Include(b => b.Publisher)
                 .Include(b => b.BookAuthors)
                 .ThenInclude(ba => ba.Author)
@@ -53,7 +87,29 @@ namespace MiniLibrary.Controllers
             return View(myBooks);
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> CancelReserve(int? id)
+        {
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var book = await _context.Books.FirstOrDefaultAsync(book => book.Id == id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                book.ReserveUserId = null;
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Reserved", "MyBooks");
+            }
+
+            return View(Reserved);
+        }
+
+        public async Task<IActionResult> Details(int? id, string? previous)
         {
             if (id == null || _context.Books == null)
             {
@@ -71,6 +127,7 @@ namespace MiniLibrary.Controllers
                 return NotFound();
             }
 
+            ViewData["Previous"] = previous;
             return View(book);
         }
 

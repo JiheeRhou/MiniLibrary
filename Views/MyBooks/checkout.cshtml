@@ -69,7 +69,8 @@
                     @Html.DisplayFor(modelItem => item.Checkouts[0].EndDate)
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-previous="Checkout">Details</a>
+                    <a asp-action="Return" asp-route-id="@item.Checkouts[0].Id">Return</a>
                 </td>
             </tr>
         }
