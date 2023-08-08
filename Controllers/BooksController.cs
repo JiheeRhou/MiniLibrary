@@ -47,6 +47,33 @@ namespace MiniLibrary.Controllers
                 return NotFound();
             }
 
+            var checkout = await _context.Checkouts
+                .Where(c => c.BookId == book.Id && c.IsReturn == false)
+                .OrderByDescending(c => c.StartDate)
+                .FirstOrDefaultAsync();
+
+            var status = "Avaiable";
+            var reserved = "";
+            if (checkout != null && !checkout.IsReturn)
+            {
+                status = "on Load";
+            }
+            else if (book.ReserveUserId != null)
+            {
+                status = "Reserved";
+            }
+
+            if (book.ReserveUserId != null)
+            {
+                User user = await _context.Users.Where(u => u.Id == book.ReserveUserId).FirstOrDefaultAsync();
+                if(user != null)
+                {
+                    reserved = user.Email;
+                }
+            }
+
+            ViewData["Status"] = status;
+            ViewData["Reserved"] = reserved;
             return View(book);
         }
 

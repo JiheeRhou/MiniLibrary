@@ -77,7 +77,6 @@
                     @if (item.ReserveUserId != null)
                     {
                         <text>Reserved</text>
-                            @Html.DisplayFor(modelItem => item.ReserveUserId)
                     }
                     else
                     {
@@ -85,7 +84,7 @@
                     }
                 }
             </td>
-            <td>
+                <td class="thumbnail">
                 <partial name="_BookImage" model="item" />
             </td>
             <td>

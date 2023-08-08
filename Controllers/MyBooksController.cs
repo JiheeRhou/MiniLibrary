@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MiniLibrary.Data;
-using MiniLibrary.Models;
 using System.Security.Claims;
-using static MiniLibrary.Models.Book;
 
 namespace MiniLibrary.Controllers
 {
@@ -69,7 +66,7 @@ namespace MiniLibrary.Controllers
                 return RedirectToAction("Checkout", "MyBooks");
             }
 
-            return View(Checkout);
+            return View(checkout);
         }
 
         public async Task<IActionResult> Reserved()
@@ -106,7 +103,7 @@ namespace MiniLibrary.Controllers
                 return RedirectToAction("Reserved", "MyBooks");
             }
 
-            return View(Reserved);
+            return View(book);
         }
 
         public async Task<IActionResult> Details(int? id, string? previous)
@@ -127,6 +124,22 @@ namespace MiniLibrary.Controllers
                 return NotFound();
             }
 
+            var checkout = await _context.Checkouts
+                .Where(c => c.BookId == book.Id && c.IsReturn == false)
+                .OrderByDescending(c => c.StartDate)
+                .FirstOrDefaultAsync();
+
+            var status = "Avaiable";
+            if (checkout != null && !checkout.IsReturn)
+            {
+                status = "on Load";
+            }
+            else if (book.ReserveUserId != null)
+            {
+                status = "Reserved";
+            }
+
+            ViewData["Status"] = status;
             ViewData["Previous"] = previous;
             return View(book);
         }

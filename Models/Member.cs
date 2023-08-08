@@ -1,15 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
 
 namespace MiniLibrary.Models
 {
+    public enum PaymentMethods
+    {
+        VISA,
+        Mastercard,
+        InteracDebit,
+        PayPal,
+        Stripe
+    }
+
     public class Member
     {
         public int Id { get; set; }
 
         [Required()]
-        [Display(Name = "User Name")]
         public string UserId { get; set; }
+
+        [Required()]
+        public decimal Fee { get; set; }
 
         [Required()]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
@@ -18,5 +28,10 @@ namespace MiniLibrary.Models
         [Required()]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime ExpiredDate { get; set; }
+
+        public PaymentMethods PaymentMethod { get; set; }
+
+        [Required()]
+        public User User { get; set; }
     }
 }

@@ -1,0 +1,58 @@
+﻿@model MiniLibrary.Models.Member
+
+@{
+    ViewData["Title"] = "Membership";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<h4>1 Year ($20)</h4>
+<hr />
+<div>
+    <div class="row">
+        <div class="form-group my-3">
+            <form asp-action="Payment">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <dl class="row">
+                    <dt class="col-sm-5">
+                        @Html.DisplayNameFor(model => model.User.Email)
+                    </dt>
+                    <dd class="col-sm-7">
+                        @Html.DisplayFor(model => model.User.Email)
+                    </dd>
+                    <dt class="col-sm-5">
+                        @Html.DisplayNameFor(model => model.RegisterDate)
+                    </dt>
+                    <dd class="col-sm-7">
+                        @Html.DisplayFor(model => model.RegisterDate)
+                    </dd>
+                    <dt class="col-sm-5">
+                        @Html.DisplayNameFor(model => model.ExpiredDate)
+                    </dt>
+                    <dd class="col-sm-7">
+                        @Html.DisplayFor(model => model.ExpiredDate)
+                    </dd>
+                </dl>
+                <div class="form-group my-3">
+                    <label asp-for="PaymentMethod" class="control-label"></label>
+                    <select asp-for="PaymentMethod" class="form-control" asp-items="ViewBag.PaymentMethods"></select>
+                </div>
+                <div class="form-group">
+                    <input type="hidden" asp-for="Fee" value="20" />
+                    <input type="submit" value="Go to Payment" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+}

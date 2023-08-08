@@ -1,16 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniLibrary.Data;
 using MiniLibrary.Models;
-using System.Linq;
 using System.Security.Claims;
-using static MiniLibrary.Models.Book;
 
 namespace MiniLibrary.Controllers
 {
-    [Authorize()]
     public class CheckoutsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -34,7 +29,10 @@ namespace MiniLibrary.Controllers
 
             foreach (var book in books)
             {
-                var checkout = await _context.Checkouts.Where(c => c.BookId == book.Id && c.IsReturn == false).OrderByDescending(c => c.StartDate).FirstOrDefaultAsync();
+                var checkout = await _context
+                    .Checkouts.Where(c => c.BookId == book.Id && c.IsReturn == false)
+                    .OrderByDescending(c => c.StartDate)
+                    .FirstOrDefaultAsync();
 
                 if (checkout != null)
                 {
@@ -73,6 +71,22 @@ namespace MiniLibrary.Controllers
                 return NotFound();
             }
 
+            var checkout = await _context.Checkouts
+                .Where(c => c.BookId == book.Id && c.IsReturn == false)
+                .OrderByDescending(c => c.StartDate)
+                .FirstOrDefaultAsync();
+
+            var status = "Avaiable";
+            if(checkout != null && !checkout.IsReturn)
+            {
+                status = "on Load";
+            }
+            else if(book.ReserveUserId != null)
+            {
+                status = "Reserved";
+            }
+
+            ViewData["Status"] = status;
             return View(book);
         }
 

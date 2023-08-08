@@ -15,12 +15,7 @@ namespace MiniLibrary.Components.ViewComponents
                 new MenuItem { Controller = "Books", Action = "Index", Label = "List" },
                 new MenuItem { Controller = "Books", Action = "Create", Label = "Create" },
             }, Authorized = true, AllowedRoles = new List<string> { "Administrator" } },
-            new MenuItem { Controller = "Checkouts", Action = "Index", Label = "Books", DropdownItems = new List<MenuItem> {
-                new MenuItem { Controller = "Checkouts", Action = "Index", Label = "List" },
-                new MenuItem { Controller = "MyBooks", Action = "Checkout", Label = "My Checkout Books" },
-                new MenuItem { Controller = "MyBooks", Action = "Reserved", Label = "My Reserved Books" },
-            }, Authorized = true, AllowedRoles = new List<string> { "Member" } },
-            new MenuItem { Controller = "Checkouts", Action = "Index", Label = "Books" , Authorized = true, AllowedRoles = new List<string> { "User" } },
+            new MenuItem { Controller = "Checkouts", Action = "Index", Label = "Books" , Authorized = true, AllowedRoles = new List<string> { "Member", "User" } },
             new MenuItem { Controller = "Authors", Action = "Index", Label = "Authors", DropdownItems = new List<MenuItem> {
                 new MenuItem { Controller = "Authors", Action = "Index", Label = "List" },
                 new MenuItem { Controller = "Authors", Action = "Create", Label = "Create" },
@@ -29,6 +24,14 @@ namespace MiniLibrary.Components.ViewComponents
                 new MenuItem { Controller = "Publishers", Action = "Index", Label = "List" },
                 new MenuItem { Controller = "Publishers", Action = "Create", Label = "Create" },
             }, Authorized = true, AllowedRoles = new List<string> { "Administrator" } },
+            new MenuItem { Controller = "MyBooks", Action = "Index", Label = "My Books", DropdownItems = new List<MenuItem> {
+                new MenuItem { Controller = "Members", Action = "Index", Label = "Membership" },
+                new MenuItem { Controller = "MyBooks", Action = "Checkout", Label = "My Checkout Books" },
+                new MenuItem { Controller = "MyBooks", Action = "Reserved", Label = "My Reserved Books" },
+            }, Authorized = true, AllowedRoles = new List<string> { "Member" } },
+            new MenuItem { Controller = "MyBooks", Action = "Index", Label = "My Books", DropdownItems = new List<MenuItem> {
+                new MenuItem { Controller = "Members", Action = "Index", Label = "Membership" },
+            }, Authorized = true, AllowedRoles = new List<string> { "User" } },
             new MenuItem { Controller = "Home", Action = "About", Label = "About" },
             new MenuItem { Controller = "Home", Action = "Contact", Label = "Contact" },
             new MenuItem { Controller = "Home", Action = "Privacy", Label = "Privacy" },

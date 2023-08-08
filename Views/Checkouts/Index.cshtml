@@ -80,19 +80,22 @@
                 </td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id" asp-route-previous="Index">Details</a>
-                    @if (item.IsAvailable == true )
+                    @if (User.IsInRole("Member"))
                     {
-                        <a asp-action="Checkout" asp-route-id="@item.Id">Checkout</a>
-                    }
-                    else
-                    {
-                        @if (item.ReserveUserId == null && item.User == null)
-                        {
-                            <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a>
-                        }
-                        else if (item.ReserveUserId != null && item.User != null)
+                        @if (item.IsAvailable == true )
                         {
                             <a asp-action="Checkout" asp-route-id="@item.Id">Checkout</a>
+                        }
+                        else
+                        {
+                            @if (item.ReserveUserId == null && item.User == null)
+                            {
+                                <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a>
+                            }
+                            else if (item.ReserveUserId != null && item.User != null)
+                            {
+                                <a asp-action="Checkout" asp-route-id="@item.Id">Checkout</a>
+                            }
                         }
                     }
                 </td>

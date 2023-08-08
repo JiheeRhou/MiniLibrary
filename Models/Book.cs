@@ -24,7 +24,6 @@ namespace MiniLibrary.Models
         public BookGenre Genre { get; set; }
 
         [MaxLength(1000)]
-        [Display(Name = "Book Description")]
         public string? Description { get; set; }
 
         [Required()]

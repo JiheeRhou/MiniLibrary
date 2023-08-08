@@ -1,0 +1,55 @@
+﻿@model IEnumerable<MiniLibrary.Models.Member>
+
+@{
+    ViewData["Title"] = "Membership";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+<br />
+<p>
+    @if (ViewBag.IsMember == false)
+    {
+        <text>Be A Member Today!<br /></text>
+        <a asp-action="Purchase">Membership</a>
+    }
+    else
+    {
+        <a asp-action="Purchase">Extended</a>
+    }
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.RegisterDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpiredDate)
+            </th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.RegisterDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExpiredDate)
+            </td>
+            <td>
+                    @if (item.ExpiredDate < DateTime.Today)
+                    {
+                        <text>Expired</text>
+                    }
+                    else
+                    {
+                        <text>Active</text>
+                    }
+                </td>
+        </tr>
+}
+    </tbody>
+</table>
