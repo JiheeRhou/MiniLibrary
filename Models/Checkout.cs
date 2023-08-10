@@ -22,7 +22,7 @@ namespace MiniLibrary.Models
         public DateTime StartDate { get; set; }
 
         [Required()]
-        [Display(Name = "Duedate")]
+        [Display(Name = "Due Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime EndDate { get; set; }
 
