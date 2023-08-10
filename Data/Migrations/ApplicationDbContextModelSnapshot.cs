@@ -272,8 +272,9 @@ namespace MiniLibrary.Data.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsReturn")
-                        .HasColumnType("bit");
+                    b.Property<string>("Return")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -299,14 +300,11 @@ namespace MiniLibrary.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("ExpiredDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Fee")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("PaymentMethod")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("RegisterDate")
                         .HasColumnType("datetime2");
@@ -321,6 +319,33 @@ namespace MiniLibrary.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Members");
+                });
+
+            modelBuilder.Entity("MiniLibrary.Models.PaymentHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal>("Fee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
+
+                    b.ToTable("PaymentHistory");
                 });
 
             modelBuilder.Entity("MiniLibrary.Models.Publisher", b =>
@@ -522,6 +547,17 @@ namespace MiniLibrary.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MiniLibrary.Models.PaymentHistory", b =>
+                {
+                    b.HasOne("MiniLibrary.Models.Member", "Member")
+                        .WithMany("PaymentHistory")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+                });
+
             modelBuilder.Entity("MiniLibrary.Models.Author", b =>
                 {
                     b.Navigation("BookAuthors");
@@ -532,6 +568,11 @@ namespace MiniLibrary.Data.Migrations
                     b.Navigation("BookAuthors");
 
                     b.Navigation("Checkouts");
+                });
+
+            modelBuilder.Entity("MiniLibrary.Models.Member", b =>
+                {
+                    b.Navigation("PaymentHistory");
                 });
 
             modelBuilder.Entity("MiniLibrary.Models.Publisher", b =>

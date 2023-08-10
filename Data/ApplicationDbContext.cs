@@ -18,6 +18,8 @@ namespace MiniLibrary.Data
 
         public DbSet<Member> Members { get; set; }
 
+        public DbSet<PaymentHistory> PaymentHistory { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

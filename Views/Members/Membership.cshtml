@@ -1,18 +1,26 @@
 ﻿@model IEnumerable<MiniLibrary.Models.Member>
 
 @{
-    ViewData["Title"] = "Members";
+    ViewData["Title"] = "Membership";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>@ViewData["Title"]</h1>
 <br />
+<p>
+    @if (ViewBag.IsMember == false)
+    {
+        <text>Be A Member Today!<br /></text>
+        <a asp-action="Purchase">Membership</a>
+    }
+    else
+    {
+        <a asp-action="Purchase">Extended</a>
+    }
+</p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.User.Email)
-            </th>
             <th>
                 @Html.DisplayNameFor(model => model.RegisterDate)
             </th>
@@ -25,9 +33,6 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Email)
-            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.RegisterDate)
             </td>

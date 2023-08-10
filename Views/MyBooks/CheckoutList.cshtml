@@ -21,13 +21,13 @@
                 @Html.DisplayNameFor(model => model.Genre)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Checkouts[0].IsReturn)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Checkouts[0].StartDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Checkouts[0].EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Checkouts[0].Return)
             </th>
             <th></th>
         </tr>
@@ -57,20 +57,20 @@
                     @Html.DisplayFor(modelItem => item.Genre)
                 </td>
                 <td>
-                    @if (item.Checkouts[0].IsReturn == true)
-                    {
-                        <text>Returned</text>
-                    }
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.Checkouts[0].StartDate)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Checkouts[0].EndDate)
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-previous="Checkout">Details</a>
-                    <a asp-action="Return" asp-route-id="@item.Checkouts[0].Id">Return</a>
+                    @Html.DisplayFor(modelItem => item.Checkouts[0].Return)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-previous="CheckoutList">Details</a>
+                    @if (item.Checkouts[0].Return == null)
+                    {
+                        <a asp-action="Return" asp-route-id="@item.Checkouts[0].Id">Return</a>
+                    }
                 </td>
             </tr>
         }

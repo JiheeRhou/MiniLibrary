@@ -51,23 +51,23 @@
                     @Html.DisplayFor(modelItem => item.Genre)
                 </td>
                 <td>
-                    @if (item.IsAvailable == true)
+                    @if (item.IsAvailable)
                     {
                         <text>Available</text>
                     }
                     else
                     {
-                        @if (item.Checkouts[0].IsReturn == false)
+                        @if (item.Checkouts[0].Return == null)
                         {
                             <text>on Loan</text>
-                        }
-                        @if (item.Checkouts[0].IsReturn == false && item.ReserveUserId != null)
-                        {
-                            <br/>
+                            @if (item.ReserveUserId != null)
+                            {
+                                <br/>
+                            }
                         }
                         @if (item.ReserveUserId != null)
                         {
-                            @if (item.Checkouts[0].IsReturn == true && item.User != null)
+                            @if (ViewBag.ReservedUser)
                             {
                                 <text>Available</text>
                             }
@@ -80,7 +80,7 @@
                 </td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id" asp-route-previous="Index">Details</a>
-                    @if (User.IsInRole("Member"))
+                    @if (ViewBag.Active)
                     {
                         @if (item.IsAvailable == true )
                         {
@@ -88,11 +88,11 @@
                         }
                         else
                         {
-                            @if (item.ReserveUserId == null && item.User == null)
+                            @if (item.ReserveUserId == null && !ViewBag.CheckoutUser)
                             {
                                 <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a>
                             }
-                            else if (item.ReserveUserId != null && item.User != null)
+                            else if (ViewBag.ReservedUser)
                             {
                                 <a asp-action="Checkout" asp-route-id="@item.Id">Checkout</a>
                             }

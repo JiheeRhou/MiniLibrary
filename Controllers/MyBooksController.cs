@@ -16,17 +16,18 @@ namespace MiniLibrary.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Checkout()
+        [Authorize]
+        public async Task<IActionResult> CheckoutList()
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var checkoutBookIds = await _context.Checkouts
-                .Where(checkout => checkout.IsReturn == false && checkout.UserId == userId)
+                .Where(checkout => checkout.UserId == userId)
                 .Select(checkout => checkout.BookId)
                 .ToListAsync();
 
             var myBooks = await _context.Books
-                .Include(b => b.Checkouts)
+                .Include(b => b.Checkouts.OrderByDescending(c => c.Id))
                 .Include(b => b.Publisher)
                 .Include(b => b.BookAuthors)
                 .ThenInclude(ba => ba.Author)
@@ -36,6 +37,7 @@ namespace MiniLibrary.Controllers
             return View(myBooks);
         }
 
+        [Authorize]
         public async Task<IActionResult> Return(int? id)
         {
             var checkout = await _context.Checkouts.FirstOrDefaultAsync(c => c.Id == id);
@@ -47,7 +49,7 @@ namespace MiniLibrary.Controllers
 
             if (ModelState.IsValid)
             {
-                checkout.IsReturn = true;
+                checkout.Return = DateTime.Today.ToString("yyyy-MM-dd");
                 await _context.SaveChangesAsync();
 
                 var book = await _context.Books.FirstOrDefaultAsync(b => b.Id == checkout.BookId);
@@ -63,13 +65,14 @@ namespace MiniLibrary.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                return RedirectToAction("Checkout", "MyBooks");
+                return RedirectToAction("CheckoutList", "MyBooks");
             }
 
             return View(checkout);
         }
 
-        public async Task<IActionResult> Reserved()
+        [Authorize]
+        public async Task<IActionResult> ReservedList()
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -98,9 +101,17 @@ namespace MiniLibrary.Controllers
             if (ModelState.IsValid)
             {
                 book.ReserveUserId = null;
+
+                var checkout = _context.Checkouts
+                    .FirstOrDefaultAsync(c => c.BookId == book.Id && c.Return == null);
+                if (checkout == null)
+                {
+                    book.IsAvailable = true;
+                }
+
                 await _context.SaveChangesAsync();
 
-                return RedirectToAction("Reserved", "MyBooks");
+                return RedirectToAction("ReservedList", "MyBooks");
             }
 
             return View(book);
@@ -108,6 +119,8 @@ namespace MiniLibrary.Controllers
 
         public async Task<IActionResult> Details(int? id, string? previous)
         {
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             if (id == null || _context.Books == null)
             {
                 return NotFound();
@@ -125,12 +138,12 @@ namespace MiniLibrary.Controllers
             }
 
             var checkout = await _context.Checkouts
-                .Where(c => c.BookId == book.Id && c.IsReturn == false)
+                .Where(c => c.BookId == book.Id && c.Return == null)
                 .OrderByDescending(c => c.StartDate)
                 .FirstOrDefaultAsync();
 
             var status = "Avaiable";
-            if (checkout != null && !checkout.IsReturn)
+            if (checkout != null && checkout.Return == null)
             {
                 status = "on Load";
             }
@@ -139,8 +152,27 @@ namespace MiniLibrary.Controllers
                 status = "Reserved";
             }
 
+            var member = await _context.Members
+                .Where(m => m.UserId == userId && m.Active == true)
+                .FirstOrDefaultAsync();
+
+            var active = false;
+            if (member != null)
+            {
+                if (member.ExpiredDate < DateTime.Today)
+                {
+                    member.Active = false;
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    active = true;
+                }
+            }
+
             ViewData["Status"] = status;
             ViewData["Previous"] = previous;
+            ViewData["Active"] = active;
             return View(book);
         }
 

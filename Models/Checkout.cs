@@ -26,9 +26,9 @@ namespace MiniLibrary.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime EndDate { get; set; }
 
-        [Required(), DefaultValue(false)]
-        [Display(Name = "Return")]
-        public bool IsReturn { get; set; }
+        [Display(Name = "Return Date")]
+        [StringLength(10)]
+        public string? Return { get; set; }
 
         public User? User { get; set; }
 

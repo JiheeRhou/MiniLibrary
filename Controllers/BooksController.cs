@@ -48,13 +48,13 @@ namespace MiniLibrary.Controllers
             }
 
             var checkout = await _context.Checkouts
-                .Where(c => c.BookId == book.Id && c.IsReturn == false)
+                .Where(c => c.BookId == book.Id && c.Return == null)
                 .OrderByDescending(c => c.StartDate)
                 .FirstOrDefaultAsync();
 
             var status = "Avaiable";
             var reserved = "";
-            if (checkout != null && !checkout.IsReturn)
+            if (checkout != null && checkout.Return == null)
             {
                 status = "on Load";
             }

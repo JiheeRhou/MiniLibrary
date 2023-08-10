@@ -21,26 +21,29 @@
                     </dt>
                     <dd class="col-sm-7">
                         @Html.DisplayFor(model => model.User.Email)
+                        <input type="hidden" asp-for="User.Email" />
                     </dd>
                     <dt class="col-sm-5">
                         @Html.DisplayNameFor(model => model.RegisterDate)
                     </dt>
                     <dd class="col-sm-7">
                         @Html.DisplayFor(model => model.RegisterDate)
+                        <input type="hidden" asp-for="RegisterDate" />
                     </dd>
                     <dt class="col-sm-5">
                         @Html.DisplayNameFor(model => model.ExpiredDate)
                     </dt>
                     <dd class="col-sm-7">
                         @Html.DisplayFor(model => model.ExpiredDate)
+                        <input type="hidden" asp-for="ExpiredDate" />
                     </dd>
                 </dl>
                 <div class="form-group my-3">
-                    <label asp-for="PaymentMethod" class="control-label"></label>
-                    <select asp-for="PaymentMethod" class="form-control" asp-items="ViewBag.PaymentMethods"></select>
+                    <label asp-for="PaymentHistory[0].PaymentMethod" class="control-label"></label>
+                    <select asp-for="PaymentHistory[0].PaymentMethod" class="form-control" asp-items="ViewBag.PaymentMethods"></select>
                 </div>
                 <div class="form-group">
-                    <input type="hidden" asp-for="Fee" value="20" />
+                    <input type="hidden" asp-for="PaymentHistory[0].Fee" value="20" />
                     <input type="submit" value="Go to Payment" class="btn btn-primary" />
                 </div>
             </form>
