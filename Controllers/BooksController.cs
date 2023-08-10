@@ -268,5 +268,18 @@ namespace MiniLibrary.Controllers
 
             return null;
         }
+
+        public async Task<IActionResult> OverdueBooks()
+        {
+            var books = await _context.Books
+                .Include(b => b.Checkouts)
+                .ThenInclude(c => c.User)
+                .Where(b => b.Checkouts.Any(c => c.EndDate < DateTime.Today))
+                .ToListAsync();
+
+            return View(books);
+
+        }
+
     }
 }

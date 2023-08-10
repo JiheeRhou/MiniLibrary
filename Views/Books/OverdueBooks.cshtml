@@ -1,0 +1,52 @@
+﻿@model IEnumerable<MiniLibrary.Models.Book>
+
+@{
+    ViewData["Title"] = "Overdue Books";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Checkouts[0].StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Checkouts[0].EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.User.Email)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <partial name="_BookImage" model="item" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Checkouts[0].StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Checkouts[0].EndDate)
+                </td>
+                <td>
+                    <a href="mailto:@Html.DisplayFor(modelItem => item.Checkouts[0].User.Email)">
+                        @Html.DisplayFor(modelItem => item.Checkouts[0].User.Email)
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
