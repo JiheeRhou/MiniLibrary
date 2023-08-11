@@ -24,8 +24,7 @@ namespace MiniLibrary.Controllers
         {
             var applicationDbContext = _context.Books
                 .Include(b => b.Publisher)
-                .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author);
+                .Include(b => b.Author);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -39,8 +38,7 @@ namespace MiniLibrary.Controllers
 
             var book = await _context.Books
                 .Include(b => b.Publisher)
-                .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
+                .Include(b => b.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
@@ -91,7 +89,7 @@ namespace MiniLibrary.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Genre,Description,PublisherId,PublishedDate,ISBN,Pages,IsAvailable,Photo")] Book book, List<int> BookAuthors, IFormFile? Photo)
+        public async Task<IActionResult> Create([Bind("Id,Title,AuthorId,Genre,Description,PublisherId,PublishedDate,ISBN,Pages,IsAvailable,Photo")] Book book, IFormFile? Photo)
         {
             if (ModelState.IsValid)
             {
@@ -100,23 +98,9 @@ namespace MiniLibrary.Controllers
                 _context.Add(book);
                 await _context.SaveChangesAsync();
 
-                if (BookAuthors != null && BookAuthors.Count > 0)
-                {
-                    foreach (int author in BookAuthors)
-                    {
-                        var bookAuthor = new BookAuthor
-                        {
-                            BookId = book.Id,
-                            AuthorId = author
-                        };
-                        _context.Add(bookAuthor);
-                    }
-
-                    await _context.SaveChangesAsync();
-                }
-
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
             ViewData["Genre"] = new SelectList(Enum.GetValues(typeof(BookGenre)));
             ViewData["Authors"] = new SelectList(_context.Authors, "Id", "Name");
@@ -131,11 +115,16 @@ namespace MiniLibrary.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books.FindAsync(id);
+            var book = await _context.Books
+                .Include(b => b.Publisher)
+                .Include(b => b.Author)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (book == null)
             {
                 return NotFound();
             }
+
             ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
             ViewData["Genre"] = new SelectList(Enum.GetValues(typeof(BookGenre)));
             ViewData["Authors"] = new SelectList(_context.Authors, "Id", "Name");
@@ -147,7 +136,7 @@ namespace MiniLibrary.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Genre,Description,PublisherId,PublishedDate,ISBN,Pages,IsAvailable,ReserveUserId,Photo")] Book book, List<int> BookAuthors, IFormFile? Photo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,AuthorId,Genre,Description,PublisherId,PublishedDate,ISBN,Pages,IsAvailable,ReserveUserId,Photo")] Book book, IFormFile? Photo)
         {
             if (id != book.Id)
             {
@@ -156,46 +145,16 @@ namespace MiniLibrary.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    book.Photo = await UploadPhoto(Photo);
+                book.Photo = await UploadPhoto(Photo);
 
-                    _context.Update(book);
-                    await _context.SaveChangesAsync();
+                _context.Update(book);
+                await _context.SaveChangesAsync();
 
-                    var existingBookAuthors = _context.BookAuthors.Where(ba => ba.BookId == book.Id);
-                    _context.BookAuthors.RemoveRange(existingBookAuthors);
-
-                    if (BookAuthors != null && BookAuthors.Count > 0)
-                    {
-                        foreach (int authorId in BookAuthors)
-                        {
-                            var bookAuthor = new BookAuthor
-                            {
-                                BookId = book.Id,
-                                AuthorId = authorId
-                            };
-                            _context.Add(bookAuthor);
-                        }
-                        await _context.SaveChangesAsync();
-                    }
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BookExists(book.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
+                ViewData["Genre"] = new SelectList(Enum.GetValues(typeof(BookGenre)));
+                ViewData["Authors"] = new SelectList(_context.Authors.ToList(), "Id", "Name");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PublisherId"] = new SelectList(_context.Publishers, "Id", "Name", book.PublisherId);
-            ViewData["Genre"] = new SelectList(Enum.GetValues(typeof(BookGenre)));
-            ViewData["Authors"] = new SelectList(_context.Authors.ToList(), "Id", "Name");
             return View(book);
         }
 
@@ -209,14 +168,40 @@ namespace MiniLibrary.Controllers
 
             var book = await _context.Books
                 .Include(b => b.Publisher)
-                .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
+                .Include(b => b.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
                 return NotFound();
             }
 
+            var checkout = await _context.Checkouts
+                .Where(c => c.BookId == book.Id && c.Return == null)
+                .OrderByDescending(c => c.StartDate)
+                .FirstOrDefaultAsync();
+
+            var status = "Avaiable";
+            var reserved = "";
+            if (checkout != null && checkout.Return == null)
+            {
+                status = "on Load";
+            }
+            else if (book.ReserveUserId != null)
+            {
+                status = "Reserved";
+            }
+
+            if (book.ReserveUserId != null)
+            {
+                User user = await _context.Users.Where(u => u.Id == book.ReserveUserId).FirstOrDefaultAsync();
+                if (user != null)
+                {
+                    reserved = user.Email;
+                }
+            }
+
+            ViewData["Status"] = status;
+            ViewData["Reserved"] = reserved;
             return View(book);
         }
 

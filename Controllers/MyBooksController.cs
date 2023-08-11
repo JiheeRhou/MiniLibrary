@@ -29,8 +29,7 @@ namespace MiniLibrary.Controllers
             var myBooks = await _context.Books
                 .Include(b => b.Checkouts.OrderByDescending(c => c.Id))
                 .Include(b => b.Publisher)
-                .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
+                .Include(b => b.Author)
                 .Where(book => checkoutBookIds.Contains(book.Id))
                 .ToListAsync();
 
@@ -79,8 +78,7 @@ namespace MiniLibrary.Controllers
             var myBooks = await _context.Books
                 .Include(b => b.Checkouts)
                 .Include(b => b.Publisher)
-                .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
+                .Include(b => b.Author)
                 .Where(book => book.ReserveUserId == userId)
                 .ToListAsync();
 
@@ -128,8 +126,7 @@ namespace MiniLibrary.Controllers
 
             var book = await _context.Books
                 .Include(b => b.Publisher)
-                .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
+                .Include(b => b.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (book == null)

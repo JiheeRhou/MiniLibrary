@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<MiniLibrary.Models.Book>
 
 @{
-    ViewData["Title"] = "Book List";
+    ViewData["Title"] = "Books";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -17,7 +17,7 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.BookAuthors)
+                @Html.DisplayNameFor(model => model.Author)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Genre)
@@ -47,13 +47,7 @@
                 @Html.DisplayFor(modelItem => item.Title)
             </td>
             <td>
-                @if (item.BookAuthors != null)
-                {
-                    @foreach (var bookAuthor in item.BookAuthors)
-                    {
-                        @Html.DisplayFor(modelItem => bookAuthor.Author.Name)<br />
-                    }
-                }
+                @Html.DisplayFor(modelItem => item.Author.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Genre)

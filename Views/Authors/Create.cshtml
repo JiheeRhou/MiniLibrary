@@ -1,13 +1,11 @@
 ﻿@model MiniLibrary.Models.Author
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New Author";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
-
-<h4>Author</h4>
+<h1>@ViewData["Title"]</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -19,9 +17,9 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="BOD" class="control-label"></label>
-                <input asp-for="BOD" class="form-control" />
-                <span asp-validation-for="BOD" class="text-danger"></span>
+                <label asp-for="DOB" class="control-label"></label>
+                <input asp-for="DOB" type="date" class="form-control" />
+                <span asp-validation-for="DOB" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

@@ -25,8 +25,7 @@ namespace MiniLibrary.Controllers
             var books = await _context.Books
                 .Include(b => b.Checkouts)
                 .Include(b => b.Publisher)
-                .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
+                .Include(b => b.Author)
                 .ToListAsync();
 
             foreach (var book in books)
@@ -86,8 +85,7 @@ namespace MiniLibrary.Controllers
 
             var book = await _context.Books
                 .Include(b => b.Publisher)
-                .Include(b => b.BookAuthors)
-                .ThenInclude(ba => ba.Author)
+                .Include(b => b.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (book == null)

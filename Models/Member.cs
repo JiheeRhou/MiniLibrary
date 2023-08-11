@@ -19,7 +19,7 @@ namespace MiniLibrary.Models
 
         public bool Active { get; set; } = true;
 
-        public User? User { get; set; }
+        public User User { get; set; }
 
         public List<PaymentHistory>? PaymentHistory { get; set; }
     }

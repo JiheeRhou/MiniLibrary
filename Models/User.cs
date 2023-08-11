@@ -8,6 +8,6 @@ namespace MiniLibrary.Models
 
         public List<Checkout>? Checkouts { get; set; }
 
-        public Member? Member { get; set; }
+        public List<Member>? Members { get; set; }
     }
 }

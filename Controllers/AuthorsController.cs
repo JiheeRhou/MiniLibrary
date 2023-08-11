@@ -53,7 +53,7 @@ namespace MiniLibrary.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,BOD")] Author author)
+        public async Task<IActionResult> Create([Bind("Id,Name,DOB")] Author author)
         {
             if (ModelState.IsValid)
             {
@@ -85,7 +85,7 @@ namespace MiniLibrary.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,BOD")] Author author)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,DOB")] Author author)
         {
             if (id != author.Id)
             {

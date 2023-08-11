@@ -1,8 +1,5 @@
-﻿using System.Diagnostics.Metrics;
-using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -90,7 +87,7 @@ namespace MiniLibrary.Controllers
             {
                 membership = new Member
                 {
-                    User = await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync(),
+                    UserId = userId,
                     RegisterDate = DateTime.Today,
                     ExpiredDate = DateTime.Today.AddYears(1),
                 };

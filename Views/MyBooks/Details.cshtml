@@ -21,18 +21,10 @@
                 @Html.DisplayFor(model => model.Title)
             </dd>
             <dt class="col-sm-4 p-1">
-                @Html.DisplayNameFor(model => model.BookAuthors)
+                @Html.DisplayNameFor(model => model.AuthorId)
             </dt>
             <dd class="col-sm-8 p-1">
-                @if (Model.BookAuthors != null)
-                {
-                    @foreach (var bookAuthor in Model.BookAuthors)
-                    {
-                        @Html.DisplayFor(modelItem => bookAuthor.Author.Name)
-
-                        <br />
-                    }
-                }
+                @Html.DisplayFor(model => model.AuthorId)
             </dd>
             <dt class="col-sm-4 p-1">
                 @Html.DisplayNameFor(model => model.Genre)

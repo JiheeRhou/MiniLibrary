@@ -21,6 +21,10 @@ namespace MiniLibrary.Models
         public string Title { get; set; }
 
         [Required()]
+        [Display(Name = "Author")]
+        public int AuthorId { get; set; }
+
+        [Required()]
         public BookGenre Genre { get; set; }
 
         [MaxLength(1000)]
@@ -43,15 +47,15 @@ namespace MiniLibrary.Models
 
         [Required()]
         [Display(Name = "Status")]
-        public bool IsAvailable { get; set; }
+        public bool IsAvailable { get; set; } = true;
 
         [Display(Name = "Reserved")]
         public string? ReserveUserId { get; set; }
 
         public string? Photo { get; set; }
 
-        [Display(Name = "Authors")]
-        public List<BookAuthor>? BookAuthors { get; set; }
+        [Display(Name = "Author")]
+        public Author? Author { get; set; }
 
         public List<Checkout>? Checkouts { get; set; }
 
