@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'MiniLibrary'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_41BCBBF7A0574CEAB90A065878E58E05 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_D7C4DD485A4A46F3890C0C057D8EC09A }}
           package: .
