@@ -20,10 +20,10 @@
                 @Html.DisplayFor(model => model.Title)
             </dd>
             <dt class="col-sm-4 p-1">
-                @Html.DisplayNameFor(model => model.AuthorId)
+                @Html.DisplayNameFor(model => model.Author)
             </dt>
             <dd class="col-sm-8 p-1">
-                @Html.DisplayFor(model => model.AuthorId)
+                @Html.DisplayFor(model => model.Author.Name)
             </dd>
             <dt class="col-sm-4 p-1">
                 @Html.DisplayNameFor(model => model.Genre)
@@ -79,13 +79,19 @@
         }
         else
         {
-            @if (Model.ReserveUserId == null && Model.User == null)
+            @if (ViewBag.Status == "on Load")
             {
-                <a asp-action="Reserve" asp-route-id="@Model.Id">Reserve</a>
+                @if (Model.ReserveUserId == null && !ViewBag.CheckoutUser)
+                {
+                    <a asp-action="Reserve" asp-route-id="@Model.Id">Reserve</a>
+                }
             }
-            else if (Model.ReserveUserId != null && Model.User != null)
+            else if (ViewBag.Status == "Reserved")
             {
-                <a asp-action="Checkout" asp-route-id="@Model.Id">Checkout</a>
+                @if (ViewBag.ReservedUser)
+                {
+                    <a asp-action="Checkout" asp-route-id="@Model.Id">Checkout</a>
+                }
             }
         }
     }

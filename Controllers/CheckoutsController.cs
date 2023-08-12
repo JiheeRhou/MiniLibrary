@@ -23,7 +23,7 @@ namespace MiniLibrary.Controllers
             var reservedUser = false;
             
             var books = await _context.Books
-                .Include(b => b.Checkouts)
+                .Include(b => b.Checkouts.OrderByDescending(c => c.Id))
                 .Include(b => b.Publisher)
                 .Include(b => b.Author)
                 .ToListAsync();
@@ -75,8 +75,6 @@ namespace MiniLibrary.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var checkoutUser = false;
-            var reservedUser = false;
 
             if (id == null || _context.Books == null)
             {
@@ -99,7 +97,9 @@ namespace MiniLibrary.Controllers
                 .FirstOrDefaultAsync();
 
             var status = "Avaiable";
-            if(checkout != null && checkout.Return == null)
+            var checkoutUser = false;
+            var reservedUser = false;
+            if (checkout != null && checkout.Return == null)
             {
                 status = "on Load";
 

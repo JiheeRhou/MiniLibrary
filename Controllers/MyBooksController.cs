@@ -76,7 +76,7 @@ namespace MiniLibrary.Controllers
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var myBooks = await _context.Books
-                .Include(b => b.Checkouts)
+                .Include(b => b.Checkouts.OrderByDescending(c => c.Id))
                 .Include(b => b.Publisher)
                 .Include(b => b.Author)
                 .Where(book => book.ReserveUserId == userId)
@@ -140,13 +140,25 @@ namespace MiniLibrary.Controllers
                 .FirstOrDefaultAsync();
 
             var status = "Avaiable";
+            var checkoutUser = false;
+            var reservedUser = false;
             if (checkout != null && checkout.Return == null)
             {
                 status = "on Load";
+
+                if (userId == checkout.UserId)
+                {
+                    checkoutUser = true;
+                }
             }
             else if (book.ReserveUserId != null)
             {
                 status = "Reserved";
+
+                if (userId == book.ReserveUserId)
+                {
+                    reservedUser = true;
+                }
             }
 
             var member = await _context.Members
@@ -168,6 +180,8 @@ namespace MiniLibrary.Controllers
             }
 
             ViewData["Status"] = status;
+            ViewData["CheckoutUser"] = checkoutUser;
+            ViewData["ReservedUser"] = reservedUser;
             ViewData["Previous"] = previous;
             ViewData["Active"] = active;
             return View(book);
