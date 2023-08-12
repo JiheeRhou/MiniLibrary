@@ -19,33 +19,12 @@ namespace MiniLibrary.Controllers
         public async Task<IActionResult> Index()
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var checkoutUser = false;
-            var reservedUser = false;
             
             var books = await _context.Books
                 .Include(b => b.Checkouts.OrderByDescending(c => c.Id))
                 .Include(b => b.Publisher)
                 .Include(b => b.Author)
                 .ToListAsync();
-
-            foreach (var book in books)
-            {
-                var checkout = await _context
-                    .Checkouts.Where(c => c.BookId == book.Id && c.Return == null)
-                    .OrderByDescending(c => c.StartDate)
-                    .FirstOrDefaultAsync();
-
-                if (checkout != null)
-                {
-                    if (userId == checkout.UserId)
-                    {
-                        checkoutUser = true;
-                    }
-                } else if (userId == book.ReserveUserId)
-                {
-                    reservedUser = true;
-                }
-            }
 
             var member = await _context.Members
                 .Where(m => m.UserId == userId && m.Active == true)
@@ -65,8 +44,6 @@ namespace MiniLibrary.Controllers
                 }
             }
 
-            ViewData["CheckoutUser"] = checkoutUser;
-            ViewData["ReservedUser"] = reservedUser;
             ViewData["Active"] = active;
             return View(books);
         }

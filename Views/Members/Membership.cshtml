@@ -8,14 +8,14 @@
 <h1>@ViewData["Title"]</h1>
 <br />
 <p>
-    @if (ViewBag.IsMember == false)
+    @if (!ViewBag.IsMember)
     {
-        <text>Be A Member Today!<br /></text>
-        <a asp-action="Purchase">Membership</a>
+        <h2>Be A Member Today!<br /></h2>
+        <a asp-action="Purchase" class="btn btn-primary">Membership</a>
     }
     else
     {
-        <a asp-action="Purchase">Extended</a>
+        <a asp-action="Purchase" class="btn btn-primary">Extend</a>
     }
 </p>
 <table class="table">

@@ -36,7 +36,7 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
+                <td style="width:100px;">
                     <partial name="_BookImage" model="item" />
                 </td>
                 <td>
@@ -58,10 +58,10 @@
                     @Html.DisplayFor(modelItem => item.Checkouts[0].Return)
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-previous="CheckoutList">Details</a>
+                    <a asp-action="Details" class="btn btn-outline-secondary" asp-route-id="@item.Id" asp-route-previous="CheckoutList">Details</a>
                     @if (item.Checkouts[0].Return == null)
                     {
-                        <a asp-action="Return" asp-route-id="@item.Checkouts[0].Id">Return</a>
+                        <a asp-action="Return" class="btn btn-outline-primary my-2" asp-route-id="@item.Checkouts[0].Id">Return</a>
                     }
                 </td>
             </tr>

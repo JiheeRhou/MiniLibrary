@@ -30,7 +30,7 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
+                <td style="width:100px;">
                     <partial name="_BookImage" model="item" />
                 </td>
                 <td>
@@ -59,39 +59,16 @@
                         }
                         @if (item.ReserveUserId != null)
                         {
-                            @if (ViewBag.ReservedUser)
-                            {
-                                <text>Available</text>
-                            }
-                            else
-                            {
-                                <text>Reserved</text>
-                            }
+                            <text>Reserved</text>
                         }
                     }
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id" asp-route-previous="Index">Details</a>
-                    @if (ViewBag.Active)
+                    <a asp-action="Details" class="btn btn-outline-secondary" asp-route-id="@item.Id" asp-route-previous="Index">Details</a>
+                    @if (ViewBag.Active && item.IsAvailable)
                     {
-                        @if (item.IsAvailable)
-                        {
-                            <a asp-action="Checkout" asp-route-id="@item.Id">Checkout</a>
-                        }
-                        else
-                        {
-                            @if (item.ReserveUserId == null && !ViewBag.CheckoutUser)
-                            {
-                                <a asp-action="Reserve" asp-route-id="@item.Id">Reserve</a>
-                            }
-                            else
-                            {
-                                @if (ViewBag.ReservedUser)
-                                {
-                                    <a asp-action="Checkout" asp-route-id="@item.Id">Checkout</a>
-                                }
-                            }
-                        }
+                        <br />
+                        <a asp-action="Checkout" class="btn btn-outline-primary my-2" asp-route-id="@item.Id">Checkout</a>
                     }
                 </td>
             </tr>

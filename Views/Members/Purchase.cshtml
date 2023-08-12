@@ -45,14 +45,11 @@
                 <div class="form-group">
                     <input type="hidden" asp-for="PaymentHistory[0].Fee" value="20" />
                     <input type="submit" value="Go to Payment" class="btn btn-primary" />
+                    <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
                 </div>
             </form>
         </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

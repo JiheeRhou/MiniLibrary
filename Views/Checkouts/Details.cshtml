@@ -8,64 +8,82 @@
 <h1>@ViewData["Title"]</h1>
 <br />
 <div class="row">
-    <div class="col-sm-5">
+    <div class="col-sm-3">
         <partial name="_BookImage" model="Model" />
     </div>
-    <div class="col-sm-7">
+    <div class="col-sm-9">
         <dl class="row">
-            <dt class="col-sm-4 p-1">
+            <dt class="col-sm-3 my-2">
                 @Html.DisplayNameFor(model => model.Title)
             </dt>
-            <dd class="col-sm-8 p-1">
+            <dd class="col-sm-9 my-2">
                 @Html.DisplayFor(model => model.Title)
             </dd>
-            <dt class="col-sm-4 p-1">
+            <dt class="col-sm-3 my-2">
                 @Html.DisplayNameFor(model => model.Author)
             </dt>
-            <dd class="col-sm-8 p-1">
+            <dd class="col-sm-9 my-2">
                 @Html.DisplayFor(model => model.Author.Name)
             </dd>
-            <dt class="col-sm-4 p-1">
+            <dt class="col-sm-3 my-2">
                 @Html.DisplayNameFor(model => model.Genre)
             </dt>
-            <dd class="col-sm-8 p-1">
+            <dd class="col-sm-9 my-2">
                 @Html.DisplayFor(model => model.Genre)
             </dd>
-            <dt class="col-sm-4 p-1">
+            <dt class="col-sm-3 my-2">
                 @Html.DisplayNameFor(model => model.Description)
             </dt>
-            <dd class="col-sm-8 p-1">
+            <dd class="col-sm-9 my-2">
                 @Html.DisplayFor(model => model.Description)
             </dd>
-            <dt class="col-sm-4 p-1">
+            <dt class="col-sm-3 my-2">
                 @Html.DisplayNameFor(model => model.Publisher)
             </dt>
-            <dd class="col-sm-8 p-1">
+            <dd class="col-sm-9 my-2">
                 @Html.DisplayFor(model => model.Publisher.Name)
             </dd>
-            <dt class="col-sm-4 p-1">
+            <dt class="col-sm-3 my-2">
                 @Html.DisplayNameFor(model => model.PublishedDate)
             </dt>
-            <dd class="col-sm-8 p-1">
+            <dd class="col-sm-9 my-2">
                 @Html.DisplayFor(model => model.PublishedDate)
             </dd>
-            <dt class="col-sm-4 p-1">
+            <dt class="col-sm-3 my-2">
                 @Html.DisplayNameFor(model => model.ISBN)
             </dt>
-            <dd class="col-sm-8 p-1">
+            <dd class="col-sm-9 my-2">
                 @Html.DisplayFor(model => model.ISBN)
             </dd>
-            <dt class="col-sm-4 p-1">
+            <dt class="col-sm-3 my-2">
                 @Html.DisplayNameFor(model => model.Pages)
             </dt>
-            <dd class="col-sm-8 p-1">
+            <dd class="col-sm-9 my-2">
                 @Html.DisplayFor(model => model.Pages)
             </dd>
-            <dt class="col-sm-4 p-1">
+            <dt class="col-sm-3 my-2">
                 @Html.DisplayNameFor(model => model.IsAvailable)
             </dt>
-            <dd class="col-sm-8 p-1">
-                @ViewBag.Status
+            <dd class="col-sm-9 my-2">
+                @if (Model.IsAvailable)
+                {
+                    <text>Available</text>
+                }
+                else
+                {
+                    @if (Model.Checkouts != null && Model.Checkouts[0].Return == null)
+                    {
+                        <text>on Loan</text>
+                        @if (Model.ReserveUserId != null)
+                        {
+                            <br />
+                        }
+                    }
+                    @if (Model.ReserveUserId != null)
+                    {
+                        <text>Reserved</text>
+                    }
+                }
             </dd>
         </dl>
     </div>
@@ -73,9 +91,9 @@
 <div class="p-3">
     @if (ViewBag.Active)
     {
-        @if (Model.IsAvailable == true)
+        @if (Model.IsAvailable == true || (ViewBag.Status == "Reserved" && ViewBag.ReservedUser))
         {
-            <a asp-action="Checkout" asp-route-id="@Model.Id">Checkout</a>
+            <a asp-action="Checkout" class="btn btn-primary" asp-route-id="@Model.Id">Checkout</a>
         }
         else
         {
@@ -83,17 +101,10 @@
             {
                 @if (Model.ReserveUserId == null && !ViewBag.CheckoutUser)
                 {
-                    <a asp-action="Reserve" asp-route-id="@Model.Id">Reserve</a>
-                }
-            }
-            else if (ViewBag.Status == "Reserved")
-            {
-                @if (ViewBag.ReservedUser)
-                {
-                    <a asp-action="Checkout" asp-route-id="@Model.Id">Checkout</a>
+                    <a asp-action="Reserve" class="btn btn-primary" asp-route-id="@Model.Id">Reserve</a>
                 }
             }
         }
     }
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-outline-primary">Back to List</a>
 </div>
