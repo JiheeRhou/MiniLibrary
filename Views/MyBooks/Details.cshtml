@@ -74,9 +74,9 @@
 <div class="p-3">
     @if (ViewBag.Active)
     {
-        @if (Model.IsAvailable == true)
+        @if (Model.IsAvailable == true || (ViewBag.Status == "Reserved" && ViewBag.ReservedUser))
         {
-            <a asp-action="Checkout" asp-route-id="@Model.Id">Checkout</a>
+            <a asp-action="Checkout" class="btn btn-primary" asp-route-id="@Model.Id">Checkout</a>
         }
         else
         {
@@ -84,17 +84,10 @@
             {
                 @if (Model.ReserveUserId == null && !ViewBag.CheckoutUser)
                 {
-                    <a asp-action="Reserve" asp-route-id="@Model.Id">Reserve</a>
-                }
-            }
-            else if (ViewBag.Status == "Reserved")
-            {
-                @if (ViewBag.ReservedUser)
-                {
-                    <a asp-action="Checkout" asp-route-id="@Model.Id">Checkout</a>
+                    <a asp-action="Reserve" class="btn btn-primary" asp-route-id="@Model.Id">Reserve</a>
                 }
             }
         }
     }
-    <a asp-action=@previous>Back to List</a>
+    <a asp-action=@previous class="btn btn-outline-primary">Back to List</a>
 </div>
