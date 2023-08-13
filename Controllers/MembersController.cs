@@ -28,7 +28,6 @@ namespace MiniLibrary.Controllers
         {
             var members = await _context.Members
                 .Include(m => m.User)
-                .Where(m => m.Active == true)
                 .ToListAsync();
 
             return View(members);

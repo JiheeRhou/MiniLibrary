@@ -259,7 +259,7 @@ namespace MiniLibrary.Controllers
             var books = await _context.Books
                 .Include(b => b.Checkouts)
                 .ThenInclude(c => c.User)
-                .Where(b => b.Checkouts.Any(c => c.EndDate < DateTime.Today))
+                .Where(b => b.Checkouts.Any(c => c.EndDate < DateTime.Today && c.Return == null))
                 .ToListAsync();
 
             return View(books);

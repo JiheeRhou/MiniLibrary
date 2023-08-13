@@ -53,14 +53,14 @@
                     }
                 </td>
                 <td>
-                    <a asp-action="Details" class="btn btn-outline-secondary" asp-route-id="@item.Id" asp-route-previous="ReservedList">Details</a>
+                    <a asp-action="Details" class="btn btn-outline-secondary mb-1" asp-route-id="@item.Id" asp-route-previous="ReservedList">Details</a>
                     @if (item.Checkouts[0].Return != null)
                     {
                         <br />
-
-                        <a asp-action="Checkout" class="btn btn-outline-primary my-2" asp-route-id="@item.Id">Checkout</a>
+                        <a asp-action="Checkout" class="btn btn-outline-primary my-1" asp-route-id="@item.Id">Checkout</a>
                     }
-                    <a asp-action="CancelReserve" class="btn btn-outline-secondary my-2" asp-route-id="@item.Id">Cancel</a>
+                    <br />
+                    <a asp-action="CancelReserve" class="btn btn-outline-secondary mt-1" asp-route-id="@item.Id">Cancel</a>
                 </td>
             </tr>
         }

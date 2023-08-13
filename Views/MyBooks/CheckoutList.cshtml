@@ -61,6 +61,7 @@
                     <a asp-action="Details" class="btn btn-outline-secondary" asp-route-id="@item.Id" asp-route-previous="CheckoutList">Details</a>
                     @if (item.Checkouts[0].Return == null)
                     {
+                        <br />
                         <a asp-action="Return" class="btn btn-outline-primary my-2" asp-route-id="@item.Checkouts[0].Id">Return</a>
                     }
                 </td>

@@ -64,11 +64,20 @@
                     }
                 </td>
                 <td>
-                    <a asp-action="Details" class="btn btn-outline-secondary" asp-route-id="@item.Id" asp-route-previous="Index">Details</a>
-                    @if (ViewBag.Active && item.IsAvailable)
+                    <a asp-action="Details" class="btn btn-outline-secondary mb-1" asp-route-id="@item.Id" asp-route-previous="Index">Details</a>
+                    @if (ViewBag.Active)
                     {
-                        <br />
-                        <a asp-action="Checkout" class="btn btn-outline-primary my-2" asp-route-id="@item.Id">Checkout</a>
+                        @if (item.IsAvailable)
+                        {
+                            <br />
+                            <a asp-action="Checkout" class="btn btn-outline-primary my-1" asp-route-id="@item.Id">Checkout</a>
+                        }
+                        else if (item.ReserveUserId == null)
+                        {
+                            <br />
+                            <a asp-action="Reserve" class="btn btn-outline-primary mt-1" asp-route-id="@item.Id">Reserve</a>
+
+                        }
                     }
                 </td>
             </tr>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiniLibrary.Data;
+using MiniLibrary.Models;
 using System.Security.Claims;
 
 namespace MiniLibrary.Controllers
@@ -85,6 +86,39 @@ namespace MiniLibrary.Controllers
             return View(myBooks);
         }
 
+        public async Task<IActionResult> Checkout(int? id)
+        {
+            string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var book = await _context.Books.FirstOrDefaultAsync(book => book.Id == id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            var checkout = new Checkout
+            {
+                UserId = userId,
+                BookId = book.Id,
+                StartDate = DateTime.Today.Date,
+                EndDate = DateTime.Today.Date.AddDays(14)
+            };
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(checkout);
+                await _context.SaveChangesAsync();
+
+                book.IsAvailable = false;
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("CheckoutList", "MyBooks");
+            }
+
+            return View(book);
+        }
+
         public async Task<IActionResult> CancelReserve(int? id)
         {
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -99,6 +133,7 @@ namespace MiniLibrary.Controllers
             if (ModelState.IsValid)
             {
                 book.ReserveUserId = null;
+                await _context.SaveChangesAsync();
 
                 var checkout = _context.Checkouts
                     .FirstOrDefaultAsync(c => c.BookId == book.Id && c.Return == null);
