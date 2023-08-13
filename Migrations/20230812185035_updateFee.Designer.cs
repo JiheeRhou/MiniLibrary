@@ -3,21 +3,23 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MiniLibrary.Data;
 
 #nullable disable
 
-namespace MiniLibrary.Data.Migrations
+namespace MiniLibrary.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230812185035_updateFee")]
+    partial class updateFee
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.20")
+                .HasAnnotation("ProductVersion", "6.0.21")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -167,7 +169,7 @@ namespace MiniLibrary.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime?>("BOD")
+                    b.Property<DateTime?>("DOB")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
@@ -187,6 +189,9 @@ namespace MiniLibrary.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AuthorId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasMaxLength(1000)
@@ -228,34 +233,13 @@ namespace MiniLibrary.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AuthorId");
+
                     b.HasIndex("PublisherId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("MiniLibrary.Models.BookAuthor", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("BookId");
-
-                    b.ToTable("BookAuthors");
                 });
 
             modelBuilder.Entity("MiniLibrary.Models.Checkout", b =>
@@ -315,8 +299,7 @@ namespace MiniLibrary.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Members");
                 });
@@ -483,6 +466,12 @@ namespace MiniLibrary.Data.Migrations
 
             modelBuilder.Entity("MiniLibrary.Models.Book", b =>
                 {
+                    b.HasOne("MiniLibrary.Models.Author", "Author")
+                        .WithMany("Books")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MiniLibrary.Models.Publisher", "Publisher")
                         .WithMany("Books")
                         .HasForeignKey("PublisherId")
@@ -493,28 +482,11 @@ namespace MiniLibrary.Data.Migrations
                         .WithMany("Books")
                         .HasForeignKey("UserId");
 
+                    b.Navigation("Author");
+
                     b.Navigation("Publisher");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MiniLibrary.Models.BookAuthor", b =>
-                {
-                    b.HasOne("MiniLibrary.Models.Author", "Author")
-                        .WithMany("BookAuthors")
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MiniLibrary.Models.Book", "Book")
-                        .WithMany("BookAuthors")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-
-                    b.Navigation("Book");
                 });
 
             modelBuilder.Entity("MiniLibrary.Models.Checkout", b =>
@@ -539,8 +511,8 @@ namespace MiniLibrary.Data.Migrations
             modelBuilder.Entity("MiniLibrary.Models.Member", b =>
                 {
                     b.HasOne("MiniLibrary.Models.User", "User")
-                        .WithOne("Member")
-                        .HasForeignKey("MiniLibrary.Models.Member", "UserId")
+                        .WithMany("Members")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -560,13 +532,11 @@ namespace MiniLibrary.Data.Migrations
 
             modelBuilder.Entity("MiniLibrary.Models.Author", b =>
                 {
-                    b.Navigation("BookAuthors");
+                    b.Navigation("Books");
                 });
 
             modelBuilder.Entity("MiniLibrary.Models.Book", b =>
                 {
-                    b.Navigation("BookAuthors");
-
                     b.Navigation("Checkouts");
                 });
 
@@ -586,7 +556,7 @@ namespace MiniLibrary.Data.Migrations
 
                     b.Navigation("Checkouts");
 
-                    b.Navigation("Member");
+                    b.Navigation("Members");
                 });
 #pragma warning restore 612, 618
         }
