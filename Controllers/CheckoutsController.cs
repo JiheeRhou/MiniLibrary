@@ -144,6 +144,7 @@ namespace MiniLibrary.Controllers
                 _context.Add(checkout);
                 await _context.SaveChangesAsync();
 
+                book.ReserveUserId = null;
                 book.IsAvailable = false;
                 await _context.SaveChangesAsync();
 

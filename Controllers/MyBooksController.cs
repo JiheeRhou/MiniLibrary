@@ -23,15 +23,15 @@ namespace MiniLibrary.Controllers
             string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var checkoutBookIds = await _context.Checkouts
-                .Where(checkout => checkout.UserId == userId)
-                .Select(checkout => checkout.BookId)
+                .Where(c => c.UserId == userId)
+                .Select(c => c.BookId)
                 .ToListAsync();
 
             var myBooks = await _context.Books
-                .Include(b => b.Checkouts.OrderByDescending(c => c.Id))
+                .Include(b => b.Checkouts.Where(c => c.UserId == userId))
                 .Include(b => b.Publisher)
                 .Include(b => b.Author)
-                .Where(book => checkoutBookIds.Contains(book.Id))
+                .Where(b => checkoutBookIds.Contains(b.Id))
                 .ToListAsync();
 
             return View(myBooks);
@@ -110,6 +110,7 @@ namespace MiniLibrary.Controllers
                 _context.Add(checkout);
                 await _context.SaveChangesAsync();
 
+                book.ReserveUserId = null;
                 book.IsAvailable = false;
                 await _context.SaveChangesAsync();
 
